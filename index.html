@@ -5,14 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2011 Novi FireCats Calendar</title>
   <style>
-    body { font-family: sans-serif; padding: 1rem; max-width: 700px; margin: auto; }
-    .event-card { background: #fff; border: 1px solid #ccc; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    h2 { color: #d32f2f; }
-    a { color: #8B0000; font-weight: bold; }
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      max-width: 700px;
+      margin: auto;
+    }
+    .event-card {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #d32f2f;
+    }
+    a {
+      color: #8B0000;
+      font-weight: bold;
+    }
+    #download-btn {
+      background: #d32f2f;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h2>2011 Novi FireCats Calendar</h2>
+  <button id="download-btn">Download as PDF</button>
   <div id="events">Loading events...</div>
 
   <script>
@@ -46,7 +73,6 @@
         const location = e.location ? `<p><strong>Location:</strong> <a href="https://maps.google.com/?q=${encodeURIComponent(e.location)}" target="_blank">${e.location}</a></p>` : '';
         const start = new Date(e.start.dateTime || e.start.date).toLocaleString();
         const end = new Date(e.end.dateTime || e.end.date).toLocaleString();
-
         return `
           <div class="event-card">
             <h3>${title}</h3>
@@ -54,14 +80,33 @@
             <p><strong>Start:</strong> ${start}</p>
             <p><strong>End:</strong> ${end}</p>
             <p><a href="${e.htmlLink}" target="_blank">View in Google Calendar</a></p>
-          </div>`;
+          </div>
+        `;
       }).join('');
 
       document.getElementById('events').innerHTML = html;
     }
 
+    // PDF download logic
+    document.getElementById('download-btn').addEventListener('click', () => {
+      const printContents = document.getElementById('events').innerHTML;
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html>
+          <head><title>Download to PDF</title></head>
+          <body>
+            ${printContents}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    });
+
     fetchEvents();
   </script>
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -70,6 +115,6 @@
           .catch(err => console.error('Service Worker registration failed:', err));
       });
     }
-  </script>  
+  </script>
 </body>
 </html>
