@@ -54,16 +54,13 @@
   <div id="events">Loading events...</div>
 
   <script>
-    const API_KEY = 'AIzaSyAlJNi586IEGgy5pzHmvjZXcbrSp511Yns';
-    const CALENDAR_ID = '203a9lm1pvcnf37vv9ph24tmn8rqo1rv@import.calendar.google.com';
+    const WORKER_PROXY_URL = 'https://11-cal-worker.veinoffeeling.workers.dev';
     const KEYWORD = '2011 Novi FireCats';
 
     async function fetchEvents() {
-      const now = new Date().toISOString();
-      const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events?key=${API_KEY}&timeMin=${now}&singleEvents=true&orderBy=startTime&maxResults=50`;
-
       try {
-        const res = await fetch(url);
+        const res = await fetch(WORKER_PROXY_URL);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         const events = (data.items || []).filter(e => e.summary && e.summary.includes(KEYWORD));
         renderEvents(events);
@@ -81,7 +78,7 @@
 
       const html = events.map(e => {
         const title = e.summary;
-        const location = e.location ? `<p>📍 <a href="https://www.google.com/maps/search/?q=${encodeURIComponent(e.location)}" target="_blank">${e.location}</a></p>` : '';
+        const location = e.location ? `<p>📍 <a href="https://www.google.com/maps/search/?q=${encodeURIComponent(e.location)}" target="_blank" rel="noopener noreferrer">${e.location}</a></p>` : '';
         const start = new Date(e.start.dateTime || e.start.date).toLocaleString();
         const end = new Date(e.end.dateTime || e.end.date).toLocaleString();
 
@@ -91,7 +88,7 @@
             ${location}
             <p><strong>Start:</strong> ${start}</p>
             <p><strong>End:</strong> ${end}</p>
-            <p><a href="${e.htmlLink}" target="_blank">📅 Open in Google Calendar</a></p>
+            <p><a href="${e.htmlLink}" target="_blank" rel="noopener noreferrer">📅 Open in Google Calendar</a></p>
           </div>`;
       }).join('');
 
