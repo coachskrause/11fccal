@@ -78,7 +78,9 @@
 
       const html = events.map(e => {
         const title = e.summary;
-        const location = e.location ? `<p>📍 <a href="https://www.google.com/maps/search/?q=${encodeURIComponent(e.location)}" target="_blank" rel="noopener noreferrer">${e.location}</a></p>` : '';
+        const location = e.location
+          ? `<p>📍 <a href="https://www.google.com/maps/search/?q=${encodeURIComponent(e.location)}" target="_blank" rel="noopener noreferrer">${e.location}</a></p>`
+          : '';
         const start = new Date(e.start.dateTime || e.start.date).toLocaleString();
         const end = new Date(e.end.dateTime || e.end.date).toLocaleString();
 
